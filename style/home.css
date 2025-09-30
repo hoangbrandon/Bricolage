@@ -1,0 +1,15 @@
+body {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    font-family:Verdana, Tahoma, sans-serif;
+    background-position: center;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 90%;
+    margin-left: 10%;
+    text-align: center;
+}
