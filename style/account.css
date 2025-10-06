@@ -19,7 +19,7 @@ body {
     width: 420px;
     background: transparent;
     border: 2px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(40px);
+    backdrop-filter: blur(30px);
     color: #688c9b;
     border-radius: 10px;
     padding: 30px 40px;
@@ -53,26 +53,6 @@ body {
     color: #688c9b;
 }
 
-.wrapper .remember-account {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14.5px;
-    margin: -15px 0 15px;
-}
-
-.remember-account label input {
-    accent-color: #688c9b;
-    margin-right: 3px;
-}
-
-.remember-account a {
-    color: #688c9b;
-    text-decoration: none;
-}
-
-.remember-account a:hover {
-    text-decoration: underline;
-}
 
 .wrapper .button {
     width: 100%;
@@ -88,18 +68,18 @@ body {
     font-weight: 600;
 }
 
-.wrapper .create-account {
+.wrapper .login-account {
     font-size: 14.5px;
     text-align: center;
     margin: 20px 0 15px;
 }
 
-.create-account p a {
+.login-account p a {
     color: #688c9b;
     text-decoration: none;
     font-weight: 600; 
 }
 
-.create-account p a:hover {
+.login-account p a:hover {
     text-decoration: underline;
 }
