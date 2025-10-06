@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    <link rel="stylesheet" href="/style/account.css">
+    <link rel="stylesheet" href="/style/general.css">
+</head>
+<body>
+    <div class="wrapper">
+        <form> <!-- dont forget to add 'action=""" to send information to database-->
+            <h1>Create Account</h1>
+            <div class="input-box">
+                <input type="email" placeholder="email" required>
+            </div>
+            <div class="input-box">
+                <input type="text" placeholder="username" required>
+            </div>
+            <div class="input-box">
+                <input type="password" placeholder="password" required>
+            </div>
+            <div class="input-box">
+                <input type="first-name" placeholder="first name" required>
+            </div>
+            <div class="input-box">
+                <input type="last-name" placeholder="last name" required>
+            </div>
+
+
+            <button type="submit" class="button">
+                Create Account
+            </button>
+
+            <div class="login-account">
+                <p>Have an account? <a href="#">Login!</a></p>
+            </div>
+        </form>
+
+    </div>
+</body>
+</html>
