@@ -56,36 +56,30 @@
             const first_name = form.querySelector('input[placeholder="first name"]').value
             const last_name = form.querySelector('input[placeholder="last name"]').value
 
-            const { data: existingUsers, error: queryError } = await supabase
-                .from('users')
-                .select("*")
-                .or(`username.eq."${username}",email.eq."${email}"`)
 
-            if (queryError) {
-                console.error(queryError)
-                alert("Something went wrong. Try again")
+            const { data: authData, error: authError } = await supabase.auth.signUp({
+                email,
+                password
+            })
+
+            if (authError) {
+                alert('Error creating account: ' + authError.message)
+            }
+
+            const userId = authData.user.id
+
+            const { data: profileData, error: profileError } = await supabase
+                .from('userprofiles')
+                .insert([{id: userId, username, first_name, last_name}])
+
+            if (profileError) {
+                console.error('Error creating profile: ', profileError)
+                alert('Error saving additional user info')
                 return
             }
 
-            if (existingUsers.length > 0) {
-                alert('Username or email already in use. Please choose another.')
-                return
-            }
-
-            const { data, error } = await supabase
-                .from('users')
-                .insert([
-                    { email, username, pass: password, first_name, last_name}
-                ])
-                .select()
-            if (error) {
-                console.error('Error creating account:', error)
-                return
-            }
-            if (data) {
-                alert('Account creation successful!')
-                window.location.href = 'login.html'
-            }
+            alert('Account created successfully!')
+            window.location.href = 'login.html'
         })
     </script>
 </body>

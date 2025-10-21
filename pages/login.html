@@ -9,10 +9,10 @@
 </head>
 <body>
     <div class="wrapper">
-        <form action="LoginServlet" method="post"> <!-- dont forget to add 'action=""" to send information to database-->
+        <form> <!-- dont forget to add 'action=""" to send information to database-->
             <h1>Login</h1>
             <div class="input-box">
-                <input type="text" placeholder="username" required>
+                <input type="email" placeholder="email" required>
             </div>
             <div class="input-box">
                 <input type="password" placeholder="password" required>
@@ -45,31 +45,23 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault()
 
-            const username = form.querySelector('input[placeholder="username"]').value
+            const email = form.querySelector('input[placeholder="email"]').value
             const password = form.querySelector('input[placeholder="password"]').value
 
-            console.log("Collected username:", username)
+            console.log("Collected email:", email)
             console.log("Collected password:", password)
 
 
-            const { data, error } = await supabase
-                .from('users')
-                .select("*")
-                .eq('username', username)
-                .eq('pass', password)
-                .single()
-            if (error) {
-                console.error('Login error:', error)
-                alert('Login failed! Invalid username or password')
-                return
-            }
-            if (data) {
-                alert(`Welcome back, ${data.first_name}!`)
-                console.log('User:', data)
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password
+            })
 
-                localStorage.setItem('user_id', data.id)
+            if (error) {
+                console.error('Login failed:' + error.message)
             } else {
-                alert('User not found or password incorrect')
+                alert('Login successful!')
+                window.location.href = '../index.html'
             }
         })
     </script>
