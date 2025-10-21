@@ -38,5 +38,55 @@
         </form>
 
     </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+        const supabaseUrl = "https://zxtjmkxvxctozdcjmzut.supabase.co"
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4dGpta3h2eGN0b3pkY2ptenV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODIwOTYsImV4cCI6MjA3NTM1ODA5Nn0.k2MmYcon5cP73O08t3i-ksU-msbvrCcNuRX8T8W0QXg"
+        const supabase = createClient(supabaseUrl, supabaseKey)
+
+        const form = document.querySelector('form')
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault()
+
+            const email = form.querySelector('input[placeholder="email"]').value
+            const username = form.querySelector('input[placeholder="username"]').value
+            const password = form.querySelector('input[placeholder="password"]').value
+            const first_name = form.querySelector('input[placeholder="first name"]').value
+            const last_name = form.querySelector('input[placeholder="last name"]').value
+
+            const { data: existingUsers, error: queryError } = await supabase
+                .from('users')
+                .select("*")
+                .or(`username.eq."${username}",email.eq."${email}"`)
+
+            if (queryError) {
+                console.error(queryError)
+                alert("Something went wrong. Try again")
+                return
+            }
+
+            if (existingUsers.length > 0) {
+                alert('Username or email already in use. Please choose another.')
+                return
+            }
+
+            const { data, error } = await supabase
+                .from('users')
+                .insert([
+                    { email, username, pass: password, first_name, last_name}
+                ])
+                .select()
+            if (error) {
+                console.error('Error creating account:', error)
+                return
+            }
+            if (data) {
+                alert('Account creation successful!')
+                window.location.href = 'login.html'
+            }
+        })
+    </script>
 </body>
 </html>
