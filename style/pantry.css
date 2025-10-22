@@ -94,6 +94,8 @@ body {
     background: aliceblue;
     backdrop-filter: blur(40px);
     display: flex;
+    border: 1px solid #bfced1;
+    border-radius: 8px;
     
     
 }
@@ -107,6 +109,8 @@ body {
     flex-direction: column;
     justify-content: flex-start;
     background: aliceblue;
+    border: 1px solid #bfced1;
+    border-radius: 8px;
 }
 
 .filter-bar h3 {
@@ -123,11 +127,17 @@ body {
 }
 
 .category-container {
-    background: #f0f8ff; /* A lighter blue than aliceblue for contrast */
+    background: #688c9b; /* A lighter blue than aliceblue for contrast */
     border: 1px solid #bfced1;
     border-radius: 8px;
     padding: 1rem;
     margin: 1rem;
     flex-basis: calc(33.333% - 2rem); /* Adjust for 3 columns, accounting for margin */
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+.category-ingredients {
+    margin-top: 0.5rem;
+    color: aliceblue;
 }
