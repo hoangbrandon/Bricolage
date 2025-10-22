@@ -28,5 +28,112 @@
             </div>
         </div>
     </header>
+    <main>
+        <div id="ingredient-list" class="ingredient-list"></div>
+    </main>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+        const supabaseUrl = "https://zxtjmkxvxctozdcjmzut.supabase.co"
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4dGpta3h2eGN0b3pkY2ptenV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODIwOTYsImV4cCI6MjA3NTM1ODA5Nn0.k2MmYcon5cP73O08t3i-ksU-msbvrCcNuRX8T8W0QXg"
+        const supabase = createClient(supabaseUrl, supabaseKey)
+
+        async function getUser() {
+            const { data: { user }, error } = await supabase.auth.getUser()
+            if ( error || !user ){
+                window.location.href = 'login.html'
+                return null
+            }
+            return user
+        }
+
+        async function fetchIngredients(userId) {
+            const { data, error } = await supabase 
+                .from('savedingredients')
+                .select(`
+                    ingredient_id,
+                    ingredients(
+                        ingredient_name,
+                        ingredient_type_id,
+                        ingredienttypes (ingredient_type)
+                    )
+                `)
+                .eq('user_id', userId)
+            if (error) {
+                console.error(error)
+                return[]
+            }
+            return data
+        }
+
+        async function fetchCategories() {
+            const { data, error } = await supabase 
+                .from('ingredienttypes')
+                .select('*')
+                .order('ingredient_type', { ascending: true })
+            if (error) {
+                console.error(error)
+                return[]
+            }
+            return data
+        }
+
+        function renderCategories(categories){
+            const listEl = document.getElementById('ingredient-list')
+            listEl.innerHTML =''
+
+            categories.forEach(cat => {
+                const categoryDiv = document.createElement('div')
+                categoryDiv.classList.add('category-container')
+
+                const catHeader = document.createElement('h3')
+                catHeader.classList.add('category-header')
+                catHeader.innerText = cat.ingredient_type
+                categoryDiv.appendChild(catHeader)
+
+                const ingListDiv = document.createElement('div')
+                ingListDiv.classList.add('category-ingredients')
+                categoryDiv.appendChild(ingListDiv)
+
+                listEl.appendChild(categoryDiv)
+            })
+        }
+
+        function renderIngredients(ingredients) {
+            const categorySet = new Set()
+
+            ingredients.forEach(item => {
+                const ing = item.ingredients
+
+                const categoryDiv = Array.from(document.querySelectorAll('.category-container'))
+                    .find(div => div.querySelector('.category-header').innerText === ing.ingredienttypes.ingredient_type)
+
+                if (categoryDiv) {
+                    const ingEl = document.createElement('div')
+                    ingEl.classList.add('ingredient-item')
+                    ingEl.innerText = ing.ingredient_name
+                    categoryDiv.querySelector('.category-ingredients').appendChild(ingEl)
+                }
+            })
+            
+            document.getElementById('ingredient-count').innerText = ingredients.length
+            document.getElementById('category-count').innerText = categorySet.size
+        }
+
+        async function loadPantry() {
+            const user = await getUser()
+            if (!user) return
+
+            const categories = await fetchCategories()
+            renderCategories(categories)
+
+            const ingredients = await fetchIngredients(user.id)
+            renderIngredients(ingredients)
+        }
+
+        loadPantry()
+
+    </script>
 </body>
 </html>
