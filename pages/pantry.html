@@ -8,6 +8,13 @@
     <title>Pantry Page</title>
 </head>
 <body>
+    <div class="pop-up" id="pop-up-box">
+        <input type="text" placeholder="search for ingredients">
+        <button>
+            ok
+        </button>
+    </div>
+
     <header class="header">
         <div class="header-content">
             <div class="header-top">
@@ -18,7 +25,7 @@
                         <span id="category-count"></span>categories
                     </p>
                 </div>
-                <button class="add-ingredient">
+                <button class="add-ingredient" id="add-button">
                     add ingredient
                 </button>
             </div>
@@ -32,6 +39,20 @@
     <main class="main-page">
         <div class="filter-bar">
             <h3>Filter Categories</h3>
+
+            <input type="checkbox" id="dairy-check" name="dairy-box" value="dairy">
+            <label for="dairy-check"> Dairy</label><br>
+            <input type="checkbox" id="fruit-check" name="fruit-box" value="fruit">
+            <label for="fruit-check"> Fruit</label><br>
+            <input type="checkbox" id="grain-check" name="grain-box" value="grain">
+            <label for="grain-check"> Grain</label><br>
+            <input type="checkbox" id="other-check" name="other-box" value="other">
+            <label for="other-check"> Other</label><br>
+            <input type="checkbox" id="protein-check" name="protein-box" value="protein">
+            <label for="protein-check"> Protein</label><br>
+            <input type="checkbox" id="spice-check" name="spice-box" value="spice">
+            <label for="spice-check"> Spice</label><br>
+
         </div>
         <div class="main-content">
             <div id="ingredient-list" class="ingredient-list"></div>
@@ -140,6 +161,12 @@
         }
 
         loadPantry()
+
+        document
+            .getElementById("add-button")
+            .addEventListener("click", function() {
+                document.getElementById("pop-up-box").style.display = "block";
+            });
 
     </script>
 </body>
