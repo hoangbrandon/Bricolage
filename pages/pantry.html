@@ -9,10 +9,13 @@
 </head>
 <body>
     <div class="pop-up" id="pop-up-box">
-        <input type="text" placeholder="search for ingredients">
-        <button>
-            ok
-        </button>
+        <div class="pop-up-header">
+            <img id="close-btn" src="/images/exit-btn.png" alt="close"/>
+        </div>
+        <input type="text" id="ingredient-search-input" placeholder="search for ingredients">
+        <div class="search-results-container" id="search-result-item">
+            placeholder
+        </div>
     </div>
 
     <header class="header">
@@ -162,10 +165,21 @@
 
         loadPantry()
 
+        const elementsToBlur = document.querySelectorAll(".header, .main-page");
+
         document
             .getElementById("add-button")
             .addEventListener("click", function() {
-                document.getElementById("pop-up-box").style.display = "block";
+                document.getElementById("pop-up-box").style.display = "flex";
+                elementsToBlur.forEach(el => el.style.filter = "blur(5px)");
+            });
+
+        document
+            .getElementById("close-btn")
+            .addEventListener("click", function() {
+                document.getElementById("pop-up-box").style.display = "none";
+                document.getElementById("ingredient-search-input").value = '';
+                elementsToBlur.forEach(el => el.style.filter = "none");
             });
 
     </script>
