@@ -42,20 +42,7 @@
     <main class="main-page">
         <div class="filter-bar">
             <h3>Filter Categories</h3>
-
-            <input type="checkbox" id="dairy-check" name="dairy-box" value="dairy">
-            <label for="dairy-check"> Dairy</label><br>
-            <input type="checkbox" id="fruit-check" name="fruit-box" value="fruit">
-            <label for="fruit-check"> Fruit</label><br>
-            <input type="checkbox" id="grain-check" name="grain-box" value="grain">
-            <label for="grain-check"> Grain</label><br>
-            <input type="checkbox" id="other-check" name="other-box" value="other">
-            <label for="other-check"> Other</label><br>
-            <input type="checkbox" id="protein-check" name="protein-box" value="protein">
-            <label for="protein-check"> Protein</label><br>
-            <input type="checkbox" id="spice-check" name="spice-box" value="spice">
-            <label for="spice-check"> Spice</label><br>
-
+           <div id="filter-category-list"></div>
         </div>
         <div class="main-content">
             <div id="ingredient-list" class="ingredient-list"></div>
@@ -110,6 +97,34 @@
             return data
         }
 
+
+        function renderFilterCategories(categories) {
+            const filterListEl = document.getElementById('filter-category-list')
+            filterListEl.innerHTML = ''
+
+            categories.forEach(cat => {
+                const filterDiv = document.createElement('div')
+                filterDiv.classList.add('filter-item')
+
+                const checkbox = document.createElement('input')
+                checkbox.type = 'checkbox'
+                checkbox.id = `filter-${cat.ingredient_type_id}`
+                checkbox.name = 'filter-box'
+                checkbox.value = cat.ingredient_type
+                checkbox.classList.add('filters')
+
+
+                const label = document.createElement('label')
+                label.htmlFor = `filter-${cat.ingredient_type_id}`
+                label.innerText = ` ${cat.ingredient_type}`
+                filterDiv.appendChild(checkbox)
+                filterDiv.appendChild(label)
+                filterListEl.appendChild(filterDiv)
+            })
+
+
+        }
+
         function renderCategories(categories){
             const listEl = document.getElementById('ingredient-list')
             listEl.innerHTML =''
@@ -158,6 +173,9 @@
 
             const categories = await fetchCategories()
             renderCategories(categories)
+
+            const filters = await fetchCategories()
+            renderFilterCategories(filters)
 
             const ingredients = await fetchIngredients(user.id)
             renderIngredients(ingredients)
