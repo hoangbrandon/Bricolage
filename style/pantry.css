@@ -159,8 +159,8 @@ body {
 
 .pop-up-header {
     display: flex;
-    justify-content: flex-end; /* supposed to align exit-btn to the end of the container 
-                                  but is not working.*/
+    justify-content: flex-end; 
+    margin-bottom: 0.3rem;
 }
 
 .pop-up img {
