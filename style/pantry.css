@@ -118,6 +118,18 @@ body {
     text-align: center;
 }
 
+#filter-category-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1rem;
+    gap: 0.5rem;
+}
+
+.filter-item {
+    font-size: 1.5rem;
+}
+
 .ingredient-list {
     display: flex;
     flex-wrap: wrap;
@@ -127,7 +139,7 @@ body {
 }
 
 .category-container {
-    background: #688c9b; /* A lighter blue than aliceblue for contrast */
+    background: #688c9b;
     border: 1px solid #bfced1;
     border-radius: 8px;
     padding: 1rem;
