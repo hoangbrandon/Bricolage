@@ -14,7 +14,6 @@
         </div>
         <input type="text" id="ingredient-search-input" placeholder="search for ingredients">
         <div class="search-results-container" id="search-result-item">
-            placeholder
         </div>
     </div>
 
@@ -48,7 +47,7 @@
             <div id="ingredient-list" class="ingredient-list"></div>
         </div>
     </main>
-
+a
 
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
@@ -83,6 +82,57 @@
                 return[]
             }
             return data
+        }
+
+        async function fetchAvailableIngredients(userId, searchQuery = '') {
+            const { data: saved, error: userError } = await supabase 
+                .from('savedingredients')
+                .select('ingredient_id')
+                .eq('user_id', userId)
+                
+            if (userError) {
+                console.error(userError)
+                return[]
+            }
+
+            const savedIds = saved.map(i => i.ingredient_id)
+
+            let query = supabase
+            .from('ingredients')
+            .select('id, ingredient_name, ingredient_type_id')
+
+            if (savedIds.length > 0) {
+                query = query.not('id', 'in', `(${savedIds.join(',')})`)
+            }
+
+            if (searchQuery && searchQuery.trim() !== '' ) {
+                query = query.ilike('ingredient_name', `%${searchQuery}%`)
+            }
+
+            const { data, error } = await query
+            
+            if (error) {
+                console.error('Error fetching available ingredients:', error)
+                return []
+            }
+
+            return data
+        }
+
+        async function addIngredientToPantry(ingredientId) {
+            const user = await getUser()
+
+            if (!user) return
+            const {error} = await supabase
+                .from('savedingredients')
+                .insert([{user_id: user.id, ingredient_id: ingredientId}])
+
+            if (error) {
+                console.error('Error saving ingredient):', error)
+                return
+            }
+
+            console.log(`Added ingredient ID ${ingredientId} to pantry`)
         }
 
         async function fetchCategories() {
@@ -122,6 +172,33 @@
                 filterListEl.appendChild(filterDiv)
             })
 
+
+        }
+
+        function renderSearchResults(results) {
+            const resultsContainer = document.getElementById('search-result-item')
+            resultsContainer.innerHTML = ''
+
+            if (results.length === 0) {
+                resultsContainer.innerHTML = '<p class="no-results">No Ingredients found</p>'
+                return
+            }
+
+            results.forEach(item => {
+                const resultDiv = document.createElement('div')
+                resultDiv.classList.add('search-result')
+
+                resultDiv.textContent = item.ingredient_name
+
+                resultDiv.addEventListener('click', async () => {
+                    await addIngredientToPantry(item.id)
+                    document.getElementById('ingredient-search-input').value = ''
+                    resultsContainer.innerHTML = ''
+                    loadPantry()
+                })
+            
+                resultsContainer.appendChild(resultDiv)
+            })
 
         }
 
@@ -182,6 +259,23 @@
         }
 
         loadPantry()
+
+        const searchInput = document.getElementById('ingredient-search-input')
+
+        searchInput.addEventListener('input', async (e) => {
+            const query = e.target.value.trim()
+            const user = await getUser()
+
+            if (!user) return
+            if (query === ' ') {
+                document.getElementById('search-result-item').innerHTML = ''
+                return
+            }
+
+            const results = await fetchAvailableIngredients(user.id, query)
+            renderSearchResults(results)
+
+        })
 
         const elementsToBlur = document.querySelectorAll(".header, .main-page");
 
