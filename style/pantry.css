@@ -208,6 +208,18 @@ body {
     border-bottom: 1px solid #e7eeee;
 }
 
+.search-result-box{
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.search-result-box:hover{
+    background-color: #c6cfd1;
+    cursor: pointer;
+}
+/* 
 .search-result-item:hover {
     background: #f0f8ff;
 }
@@ -226,4 +238,4 @@ body {
     padding: 10px;
     color: #888;
     font-style: italic;
-}
+} */

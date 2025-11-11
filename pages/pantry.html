@@ -185,19 +185,23 @@ a
             }
 
             results.forEach(item => {
-                const resultDiv = document.createElement('div')
-                resultDiv.classList.add('search-result')
+                const box = document.createElement('div')
+                box.classList.add('search-result-box')
 
-                resultDiv.textContent = item.ingredient_name
+                const name = document.createElement('span')
+                name.textContent = item.ingredient_name
 
-                resultDiv.addEventListener('click', async () => {
-                    await addIngredientToPantry(item.id)
-                    document.getElementById('ingredient-search-input').value = ''
-                    resultsContainer.innerHTML = ''
-                    loadPantry()
+                box.appendChild(name)
+
+                box.addEventListener('click', async () => {
+                    box.remove()
+                    const user = await getUser()
+                    if (!user) return
+
+                    addIngredientToPantry(item.id)
                 })
             
-                resultsContainer.appendChild(resultDiv)
+                resultsContainer.appendChild(box)
             })
 
         }
@@ -224,6 +228,10 @@ a
         }
 
         function renderIngredients(ingredients) {
+
+            document.querySelectorAll('.category-ingredients').forEach(div => {
+                div.innerHTML = ''
+            })
             const categorySet = new Set()
 
             ingredients.forEach(item => {
@@ -281,17 +289,28 @@ a
 
         document
             .getElementById("add-button")
-            .addEventListener("click", function() {
+            .addEventListener("click", async function() {
                 document.getElementById("pop-up-box").style.display = "flex";
                 elementsToBlur.forEach(el => el.style.filter = "blur(5px)");
+
+                const user = await getUser();
+                if (!user) return;
+
+                const results = await fetchAvailableIngredients(user.id, '');
+                renderSearchResults(results);
             });
 
         document
             .getElementById("close-btn")
-            .addEventListener("click", function() {
+            .addEventListener("click", async function() {
                 document.getElementById("pop-up-box").style.display = "none";
                 document.getElementById("ingredient-search-input").value = '';
                 elementsToBlur.forEach(el => el.style.filter = "none");
+
+                const user = await getUser();
+                if (!user) return;
+
+                await renderIngredients(await fetchIngredients(user.id));
             });
 
     </script>
