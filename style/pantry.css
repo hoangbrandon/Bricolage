@@ -219,6 +219,14 @@ body {
     background-color: #c6cfd1;
     cursor: pointer;
 }
+
+.no-results {
+    padding: 10px;
+    color: #888;
+    font-style: italic;
+    text-align: center;
+} 
+
 /* 
 .search-result-item:hover {
     background: #f0f8ff;
@@ -234,9 +242,3 @@ body {
     background-color: #f3f3f3;
 }
 */
-.no-results {
-    padding: 10px;
-    color: #888;
-    font-style: italic;
-    text-align: center;
-} 
