@@ -233,9 +233,10 @@ body {
 .search-result:hover {
     background-color: #f3f3f3;
 }
-
+*/
 .no-results {
     padding: 10px;
     color: #888;
     font-style: italic;
-} */
+    text-align: center;
+} 
