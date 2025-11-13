@@ -118,7 +118,7 @@ body {
     text-align: center;
 }
 
-#filter-category-list {
+#filter-ingredient-type-list {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -138,7 +138,7 @@ body {
     overflow-y: auto; /* Add scroll if content overflows */
 }
 
-.category-container {
+.ingredient-type-container {
     background: #688c9b;
     border: 1px solid #bfced1;
     border-radius: 8px;
@@ -149,7 +149,7 @@ body {
     text-align: center;
 }
 
-.category-ingredients {
+.ingredient-type-ingredients {
     margin-top: 0.5rem;
     color: aliceblue;
 }

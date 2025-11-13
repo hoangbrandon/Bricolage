@@ -24,7 +24,7 @@
                     <h2 class="header-title">pantry page</h2>
                     <p class="header-subtitles">
                         <span id="ingredient-count"></span>ingredients
-                        <span id="category-count"></span>categories
+                        <span id="ingredient-type-count"></span>types
                     </p>
                 </div>
                 <button class="add-ingredient" id="add-button">
@@ -40,8 +40,8 @@
 
     <main class="main-page">
         <div class="filter-bar">
-            <h3>Filter Categories</h3>
-           <div id="filter-category-list"></div>
+            <h3>Filter Ingreident Types</h3>
+           <div id="filter-ingredient-type-list"></div>
         </div>
         <div class="main-content">
             <div id="ingredient-list" class="ingredient-list"></div>
@@ -135,7 +135,7 @@ a
             console.log(`Added ingredient ID ${ingredientId} to pantry`)
         }
 
-        async function fetchCategories() {
+        async function fetchIngredientTypes() {
             const { data, error } = await supabase 
                 .from('ingredienttypes')
                 .select('*')
@@ -148,25 +148,25 @@ a
         }
 
 
-        function renderFilterCategories(categories) {
-            const filterListEl = document.getElementById('filter-category-list')
+        function renderFilterIngredientTypes(ingredientTypes) {
+            const filterListEl = document.getElementById('filter-ingredient-type-list')
             filterListEl.innerHTML = ''
 
-            categories.forEach(cat => {
+            ingredientTypes.forEach(type => {
                 const filterDiv = document.createElement('div')
                 filterDiv.classList.add('filter-item')
 
                 const checkbox = document.createElement('input')
                 checkbox.type = 'checkbox'
-                checkbox.id = `filter-${cat.ingredient_type_id}`
+                checkbox.id = `filter-${type.id}`
                 checkbox.name = 'filter-box'
-                checkbox.value = cat.ingredient_type
+                checkbox.value = type.ingredient_type
                 checkbox.classList.add('filters')
 
 
                 const label = document.createElement('label')
-                label.htmlFor = `filter-${cat.ingredient_type_id}`
-                label.innerText = ` ${cat.ingredient_type}`
+                label.htmlFor = `filter-${type.id}`
+                label.innerText = ` ${type.ingredient_type}`
                 filterDiv.appendChild(checkbox)
                 filterDiv.appendChild(label)
                 filterListEl.appendChild(filterDiv)
@@ -206,61 +206,63 @@ a
 
         }
 
-        function renderCategories(categories){
+        function renderIngredientTypes(ingredientTypes){
             const listEl = document.getElementById('ingredient-list')
             listEl.innerHTML =''
 
-            categories.forEach(cat => {
-                const categoryDiv = document.createElement('div')
-                categoryDiv.classList.add('category-container')
+            ingredientTypes.forEach(type => {
+                const ingredientTypeDiv = document.createElement('div')
+                ingredientTypeDiv.classList.add('ingredient-type-container')
 
-                const catHeader = document.createElement('h3')
-                catHeader.classList.add('category-header')
-                catHeader.innerText = cat.ingredient_type
-                categoryDiv.appendChild(catHeader)
+                const ingredientTypeHeader = document.createElement('h3')
+                ingredientTypeHeader.classList.add('ingredient-type-header')
+                ingredientTypeHeader.innerText = type.ingredient_type
+                ingredientTypeDiv.appendChild(ingredientTypeHeader)
 
                 const ingListDiv = document.createElement('div')
-                ingListDiv.classList.add('category-ingredients')
-                categoryDiv.appendChild(ingListDiv)
+                ingListDiv.classList.add('ingredient-type-ingredients')
+                ingredientTypeDiv.appendChild(ingListDiv)
 
-                listEl.appendChild(categoryDiv)
+                listEl.appendChild(ingredientTypeDiv)
             })
         }
 
         function renderIngredients(ingredients) {
 
-            document.querySelectorAll('.category-ingredients').forEach(div => {
+            document.querySelectorAll('.ingredient-type-ingredients').forEach(div => {
                 div.innerHTML = ''
             })
-            const categorySet = new Set()
+            const ingredientTypeSet = new Set()
 
             ingredients.forEach(item => {
                 const ing = item.ingredients
 
-                const categoryDiv = Array.from(document.querySelectorAll('.category-container'))
-                    .find(div => div.querySelector('.category-header').innerText === ing.ingredienttypes.ingredient_type)
+                const typeDiv = Array.from(document.querySelectorAll('.ingredient-type-container'))
+                    .find(div => div.querySelector('.ingredient-type-header').innerText === ing.ingredienttypes.ingredient_type)
 
-                if (categoryDiv) {
+                if (typeDiv) {
                     const ingEl = document.createElement('div')
                     ingEl.classList.add('ingredient-item')
                     ingEl.innerText = ing.ingredient_name
-                    categoryDiv.querySelector('.category-ingredients').appendChild(ingEl)
+                    typeDiv.querySelector('.ingredient-type-ingredients').appendChild(ingEl)
                 }
+
+                ingredientTypeSet.add(ing.ingredienttypes.ingredient_type)
             })
             
             document.getElementById('ingredient-count').innerText = ingredients.length
-            document.getElementById('category-count').innerText = categorySet.size
+            document.getElementById('ingredient-type-count').innerText = ingredientTypeSet.size
         }
 
         async function loadPantry() {
             const user = await getUser()
             if (!user) return
 
-            const categories = await fetchCategories()
-            renderCategories(categories)
+            const ingredientTypes = await fetchIngredientTypes()
+            renderIngredientTypes(ingredientTypes)
 
-            const filters = await fetchCategories()
-            renderFilterCategories(filters)
+            const filters = await fetchIngredientTypes()
+            renderFilterIngredientTypes(filters)
 
             const ingredients = await fetchIngredients(user.id)
             renderIngredients(ingredients)
