@@ -70,7 +70,7 @@ a
                 .from('savedingredients')
                 .select(`
                     ingredient_id,
-                    ingredients(
+                    ingredients!savedingredients_ingredient_fk(
                         ingredient_name,
                         ingredient_type_id,
                         ingredienttypes (ingredient_type)
@@ -175,6 +175,30 @@ a
 
         }
 
+        function applyFilters() {
+            // Get an array of the 'value' from each checked checkbox (e.g., ['Dairy', 'Fruit'])
+            const checkedTypes = Array.from(document.querySelectorAll('#filter-ingredient-type-list input:checked')).map(checkbox => checkbox.value);
+            const allTypeContainers = document.querySelectorAll('.ingredient-type-container');
+
+            // If no boxes are checked, show all containers
+            if (checkedTypes.length === 0) {
+                allTypeContainers.forEach(container => {
+                    container.style.display = 'block';
+                });
+                return;
+            }
+
+            // Otherwise, show or hide containers based on the selection
+            allTypeContainers.forEach(container => {
+                const containerType = container.querySelector('.ingredient-type-header').innerText;
+                if (checkedTypes.includes(containerType)) {
+                    container.style.display = 'block'; // Show if its type is in the checked list
+                } else {
+                    container.style.display = 'none'; // Hide if it's not
+                }
+            });
+        }
+
         function renderSearchResults(results) {
             const resultsContainer = document.getElementById('search-result-item')
             resultsContainer.innerHTML = ''
@@ -267,6 +291,9 @@ a
             const ingredients = await fetchIngredients(user.id)
             renderIngredients(ingredients)
         }
+
+        // Add a single event listener to the parent list of the checkboxes
+        document.getElementById('filter-ingredient-type-list').addEventListener('change', applyFilters);
 
         loadPantry()
 
