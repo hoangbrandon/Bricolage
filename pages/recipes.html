@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style/pantry.css">
+    <link rel="stylesheet" href="/style/general.css">
+    <title>Recipe Search</title>
+</head>
+<body>
+    <div class="pop-up" id="pop-up-box">
+        <div class="pop-up-header">
+            <img id="close-btn" src="/images/exit-btn.png" alt="close"/>
+        </div>
+        <input type="text" id="ingredient-search-input" placeholder="search for ingredients">
+        <div class="search-results-container" id="search-result-item">
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="header-content">
+            <div class="header-top">
+                <div class="header-text">
+                    <h2 class="header-title">Recipe Search</h2>
+                    <p class="header-subtitles">
+                    </p>
+                </div>
+            </div>
+
+            <div class="search-bar">
+                <input type="text" placeholder="search for ingredients">
+            </div>
+        </div>
+    </header>
+
+        <main class="main-page">
+        <div class="filter-bar">
+            <h3>Filter Ingreident Types</h3>
+           <div id="filter-ingredient-type-list"></div>
+        </div>
+        <div class="main-content">
+            <div id="ingredient-list" class="ingredient-list"></div>
+        </div>
+    </main>
+
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+        const supabaseUrl = "https://zxtjmkxvxctozdcjmzut.supabase.co"
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4dGpta3h2eGN0b3pkY2ptenV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODIwOTYsImV4cCI6MjA3NTM1ODA5Nn0.k2MmYcon5cP73O08t3i-ksU-msbvrCcNuRX8T8W0QXg"
+        const supabase = createClient(supabaseUrl, supabaseKey)
+
+        async function getUser() {
+            const { data: { user }, error } = await supabase.auth.getUser()
+            if ( error || !user ){
+                window.location.href = 'login.html'
+                return null
+            }
+            return user
+        }
+
+        async function loadSavedRecipes() {
+            const user = await getUser()
+            if (!user) return
+
+            const savedRecipes = await fetchSavedRecipes()
+            renderSavedRecipes(savedRecipes)
+        }
+
+        loadSavedRecipes()
+
+
+    </script>
+</body>
+</html>
