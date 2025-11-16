@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style/recipes.css">
     <link rel="stylesheet" href="/style/pantry.css">
     <link rel="stylesheet" href="/style/general.css">
     <title>Recipe Search</title>
@@ -28,7 +29,10 @@
             </div>
 
             <div class="search-bar">
-                <input type="text" placeholder="search for ingredients">
+                <input id="recipe-search-input" type="text" placeholder="search for ingredients">
+                <div id ="selected-ingredients"></div>
+                <button id="search-button">Search</button>
+                <div id="ingredient-dropdown" class="dropdown hidden"></div>
             </div>
         </div>
     </header>
@@ -39,7 +43,7 @@
            <div id="filter-ingredient-type-list"></div>
         </div>
         <div class="main-content">
-            <div id="ingredient-list" class="ingredient-list"></div>
+            <div id="recipe-list" class="recipe-list"></div>
         </div>
     </main>
 
@@ -51,6 +55,12 @@
         const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4dGpta3h2eGN0b3pkY2ptenV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODIwOTYsImV4cCI6MjA3NTM1ODA5Nn0.k2MmYcon5cP73O08t3i-ksU-msbvrCcNuRX8T8W0QXg"
         const supabase = createClient(supabaseUrl, supabaseKey)
 
+        let selectedIngredients = []
+
+        const searchInput = document.getElementById("recipe-search-input")
+        const dropdown = document.getElementById("ingredient-dropdown")
+        const selectedbox = document.getElementById("selected-ingredients")
+
         async function getUser() {
             const { data: { user }, error } = await supabase.auth.getUser()
             if ( error || !user ){
@@ -60,16 +70,124 @@
             return user
         }
 
-        async function loadSavedRecipes() {
-            const user = await getUser()
-            if (!user) return
+        async function searchPantryIngredients(query){
+            const { data, error } = await supabase
+                .from("ingredients")
+                .select("ingredient_name")
+                .ilike("ingredient_name", `%${query}%`)
 
-            const savedRecipes = await fetchSavedRecipes()
-            renderSavedRecipes(savedRecipes)
+            return data || []
         }
 
-        loadSavedRecipes()
+        async function searchRecipes(query) {
+            const user = await getUser()
+            if (!user) return
+            const apiKey = "28eaa893403044b9b371bb514d9f38bc"
+            const url = `https://api.spoonacular.com/recipes/complexSearch?query=${(encodeURIComponent(query))}(query)&number=12&apiKey=${apiKey}`;
 
+            const response = await fetch(url)
+            const data = await response.json()
+
+            console.log("Recipes:", data.recipes)
+
+            return data.results;
+        }
+
+        async function addIngredient(name){
+            if(!selectedIngredients.includes(name)) {
+                selectedIngredients.push(name)
+            }
+
+            renderSelectedIngredients();
+        }
+
+        async function renderDropdown(results) {
+            if (!results || results.length === 0 ) {
+                dropdown.innerHTML = ""
+                dropdown.classList.add("hidden")
+                return
+            }
+
+            dropdown.innerHTML = results
+                .map(item => `<div class ="dropdown-item" data-name="${item.ingredient_name}">${item.ingredient_name}</div>`)
+                .join("")
+
+            dropdown.classList.remove("hidden")
+        }
+
+        function renderRecipes(recipes){
+            const recipeList = document.getElementById("recipe-list")
+            if (!recipes || recipes.length === 0) {
+                recipeList.innerHTML = "No Recipes Found"
+            }
+
+            recipeList.innerHTML = recipes.map(recipe => `
+                <div class="recipe-info">
+                    <h3 class="recipe-title">${recipe.title}</h3>
+                </div>`
+            )
+        }
+
+        function renderSelectedIngredients(){
+            selectedbox.innerHTML = selectedIngredients
+                .map(
+                    ing =>`
+                    <div class ="tag">
+                    ${ing}
+                    <span class ="remove-tag" data-name="${ing}">✕</span>
+                    </div>`
+                )
+                .join("")
+        }
+
+        async function loadinitialRecipes() {
+            const apiKey = "28eaa893403044b9b371bb514d9f38bc"
+            const url = `https://api.spoonacular.com/recipes/random?number=12&apiKey=${apiKey}`;
+
+            const response = await fetch(url)
+            const data = await response.json()
+
+            renderRecipes(data.recipes)
+        }
+
+        loadinitialRecipes()
+
+
+        dropdown.addEventListener("click", (e) => {
+            if (e.target.classList.contains("dropdown-item")) {
+                const name = e.target.dataset.name
+                addIngredient(name)
+                dropdown.classList.add("hidden")
+                searchInput.value = ""
+            }
+        })
+
+        searchInput.addEventListener("input", async (e) => {
+            const query = e.target.value.trim()
+            if (!query){
+                dropdown.classList.add("hidden")
+                return
+            }
+
+            const results = await searchPantryIngredients(query)
+            renderDropdown(results)
+        })
+
+        document.getElementById("search-button").addEventListener("click", async (e) => {
+            if (selectedIngredients === 0) return
+
+            const results = await searchRecipes(selectedIngredients)
+            renderRecipes(results)
+        })
+
+
+        selectedbox.addEventListener("click", async (e) => {
+            if (e.target.classList.contains("remove-tag")) {
+                const name = e.target.dataset.name
+                selectedIngredients = selectedIngredients.filter(i => i !== name)
+                renderSelectedIngredients()
+            }
+        })
 
     </script>
 </body>

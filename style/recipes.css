@@ -1,0 +1,55 @@
+.search-bar {
+    position: relative;
+}
+
+#search-button {
+    position: absolute;
+    right: 10px;
+}
+
+#ingredient-dropdown{
+    position: absolute;
+    top: 100%;
+    width: 100%;
+
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+
+    z-index: 999;
+}
+
+.hidden{
+    display: none;
+}
+
+.dropdown-item {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background: #f5f5f5;
+}
+
+
+#selected-ingredients {
+    position: absolute;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.tag {
+    display: inline-flex;
+
+    border: 1px solid #ccc;
+    background: #d9edff;
+    color: #688c9b;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+.tag:hover {
+    color: white;
+    background: #48606b;
+}
