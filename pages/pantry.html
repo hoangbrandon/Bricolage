@@ -139,7 +139,7 @@ a
             const { data, error } = await supabase 
                 .from('ingredienttypes')
                 .select('*')
-                .order('ingredient_type', { ascending: true })
+                .order('id', { ascending: true })
             if (error) {
                 console.error(error)
                 return[]
