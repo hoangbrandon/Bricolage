@@ -121,11 +121,18 @@
                 recipeList.innerHTML = "No Recipes Found"
             }
 
-            recipeList.innerHTML = recipes.map(recipe => `
-                <div class="recipe-info">
-                    <h3 class="recipe-title">${recipe.title}</h3>
-                </div>`
-            )
+            recipeList.innerHTML = recipes
+                .map(recipe => {
+                const recipeUrl = `https://spoonacular.com/recipes/${recipe.title.replace(/ /g, "-")}-${recipe.id}`
+                
+                return `
+                    <div class="recipe-card">
+                        <img src="${recipe.image}" alt="${recipe.title}"
+                        <a href="${recipeUrl}" target="_blank" class="recipe-title">
+                            ${recipe.title}
+                        </a>
+                    </div>`
+                })
         }
 
         function renderSelectedIngredients(){
