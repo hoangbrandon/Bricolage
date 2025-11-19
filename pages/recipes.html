@@ -4,20 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/style/recipes.css">
-    <link rel="stylesheet" href="/style/pantry.css">
     <link rel="stylesheet" href="/style/general.css">
     <title>Recipe Search</title>
 </head>
 <body>
-    <div class="pop-up" id="pop-up-box">
-        <div class="pop-up-header">
-            <img id="close-btn" src="/images/exit-btn.png" alt="close"/>
-        </div>
-        <input type="text" id="ingredient-search-input" placeholder="search for ingredients">
-        <div class="search-results-container" id="search-result-item">
-        </div>
-    </div>
-
     <header class="header">
         <div class="header-content">
             <div class="header-top">
@@ -26,12 +16,12 @@
                     <p class="header-subtitles">
                     </p>
                 </div>
+                <button id="search-button" class="searchBtn">Search</button>
             </div>
 
             <div class="search-bar">
-                <input id="recipe-search-input" type="text" placeholder="search for ingredients">
+                <input class="search-bar" id="recipe-search-input" type="text" placeholder="search for ingredients">
                 <div id ="selected-ingredients"></div>
-                <button id="search-button">Search</button>
                 <div id="ingredient-dropdown" class="dropdown hidden"></div>
             </div>
         </div>
@@ -43,7 +33,7 @@
            <div id="filter-ingredient-type-list"></div>
         </div>
         <div class="main-content">
-            <div id="recipe-list" class="recipe-list"></div>
+            <div id="recipe-list" class="recipeList"></div>
         </div>
     </main>
 
@@ -127,12 +117,12 @@
                 
                 return `
                     <div class="recipe-card">
-                        <img src="${recipe.image}" alt="${recipe.title}"
+                        <img src="${recipe.image}" alt="${recipe.title}">
                         <a href="${recipeUrl}" target="_blank" class="recipe-title">
                             ${recipe.title}
                         </a>
-                    </div>`
-                })
+                    </div>`;
+                }).join("");
         }
 
         function renderSelectedIngredients(){
