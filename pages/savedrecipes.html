@@ -42,16 +42,16 @@
            <div id="filter-ingredient-type-list"></div>
         </div>
         <div class="main-content">
-            <div id="ingredient-list" class="ingredient-list"></div>
+            <div id="saved-recipes" class="savedRecipes"></div>
         </div>
     </main>
 
 
     <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+        import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
-        const supabaseUrl = "https://zxtjmkxvxctozdcjmzut.supabase.co"
-        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4dGpta3h2eGN0b3pkY2ptenV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODIwOTYsImV4cCI6MjA3NTM1ODA5Nn0.k2MmYcon5cP73O08t3i-ksU-msbvrCcNuRX8T8W0QXg"
+        const supabaseUrl = "https://xxlupwqcngojcijmkaji.supabase.co"
+        const supabaseKey = "sb_publishable_SN5Hm9L_TJDRs7c64UTGAw_pPpyN27c"
         const supabase = createClient(supabaseUrl, supabaseKey)
 
         async function getUser() {
@@ -67,8 +67,40 @@
             const user = await getUser()
             if (!user) return
 
-            const savedRecipes = await fetchSavedRecipes()
+            const savedRecipes = fetchSavedRecipes()
             renderSavedRecipes(savedRecipes)
+        }
+
+        async function fetchSavedRecipes() {
+            try{ 
+                const user = getUser()
+
+                const { data, error } = await supabase
+                .from("savedrecipes")
+                .select(`
+                recipe_id,
+                recipes (
+                    id,
+                    recipe_name,
+                    duration,
+                    instructions,
+                    cost
+                )
+                `) 
+                .eq("user_id", user.id)
+
+            } catch (err) {
+                console.error("Error", err)
+                return []
+            }
+
+            return data
+        }
+
+        function renderSavedRecipes(savedRecipes) {
+            const list = document.getElementById("saved-recipes")
+
+
         }
 
         loadSavedRecipes()
