@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/style/pantry.css">
+    <link rel="stylesheet" href="/style/recipes.css">
     <link rel="stylesheet" href="/style/general.css">
     <title>Pantry Page</title>
 </head>
@@ -50,11 +51,11 @@
 a
 
     <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+        import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
-        const supabaseUrl = "https://zxtjmkxvxctozdcjmzut.supabase.co"
-        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4dGpta3h2eGN0b3pkY2ptenV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODIwOTYsImV4cCI6MjA3NTM1ODA5Nn0.k2MmYcon5cP73O08t3i-ksU-msbvrCcNuRX8T8W0QXg"
-        const supabase = createClient(supabaseUrl, supabaseKey)
+                const supabaseUrl = "https://xxlupwqcngojcijmkaji.supabase.co"
+                const supabaseKey = "sb_publishable_SN5Hm9L_TJDRs7c64UTGAw_pPpyN27c"
+                const supabase = createClient(supabaseUrl, supabaseKey)
 
         async function getUser() {
             const { data: { user }, error } = await supabase.auth.getUser()
@@ -70,7 +71,7 @@ a
                 .from('savedingredients')
                 .select(`
                     ingredient_id,
-                    ingredients!savedingredients_ingredient_fk(
+                    ingredients(
                         ingredient_name,
                         ingredient_type_id,
                         ingredienttypes (ingredient_type)
@@ -115,7 +116,7 @@ a
                 console.error('Error fetching available ingredients:', error)
                 return []
             }
-
+            console.log("AVAILABLE INGREDIENTS RESULT:", data)
             return data
         }
 
@@ -304,7 +305,7 @@ a
             const user = await getUser()
 
             if (!user) return
-            if (query === ' ') {
+            if (query.trim()) {
                 document.getElementById('search-result-item').innerHTML = ''
                 return
             }

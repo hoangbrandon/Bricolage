@@ -49,10 +49,10 @@
 
 
     <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+        import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
-        const supabaseUrl = "https://zxtjmkxvxctozdcjmzut.supabase.co"
-        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4dGpta3h2eGN0b3pkY2ptenV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODIwOTYsImV4cCI6MjA3NTM1ODA5Nn0.k2MmYcon5cP73O08t3i-ksU-msbvrCcNuRX8T8W0QXg"
+        const supabaseUrl = "https://xxlupwqcngojcijmkaji.supabase.co"
+        const supabaseKey = "sb_publishable_SN5Hm9L_TJDRs7c64UTGAw_pPpyN27c"
         const supabase = createClient(supabaseUrl, supabaseKey)
 
         let selectedIngredients = []
@@ -79,17 +79,16 @@
             return data || []
         }
 
-        async function searchRecipes(query) {
+        async function searchRecipes(selectedIngredients) {
             const user = await getUser()
             if (!user) return
             const apiKey = "28eaa893403044b9b371bb514d9f38bc"
-            const url = `https://api.spoonacular.com/recipes/complexSearch?query=${(encodeURIComponent(query))}(query)&number=12&apiKey=${apiKey}`;
+            const url = `https://api.spoonacular.com/recipes/complexSearch?includeIngredients=${(encodeURIComponent(selectedIngredients))}&number=12&apiKey=${apiKey}`;
 
             const response = await fetch(url)
             const data = await response.json()
 
             console.log("Recipes:", data.recipes)
-
             return data.results;
         }
 
@@ -115,6 +114,63 @@
             dropdown.classList.remove("hidden")
         }
 
+        async function fetchRecipeDetails(recipeId){
+            const apiKey = "28eaa893403044b9b371bb514d9f38bc"
+            const url = `https://api.spoonacular.com/recipes/${recipeId}/information?includeNutrition=false&&apiKey=${apiKey}`;
+
+            const response = await fetch(url)
+            const data = await response.json()
+            return data
+        }
+
+        async function saveRecipe(recipeId, userId) {
+
+            const numId = Number(recipeId)
+
+            try {
+                const {data: existing, error: checkError} = await supabase
+                    .from("recipes")
+                    .select("id")
+                    .eq("id",numId)
+                    .maybeSingle()
+
+                if (checkError) throw checkError
+                
+                if (!existing) {
+                    const recipeData = await fetchRecipeDetails(numId)
+
+                    const recipeUrl = recipeData.sourceUrl ||
+                    `https://spoonacular.com/recipes/${recipeData.title.replace(/ /g, "-")}-${numId}`
+
+                    const {error: insertError} = await supabase
+                    .from("recipes")
+                    .insert({
+                        id: numId,
+                        recipe_name: recipeData.title,
+                        duration: recipeData.readyInMinutes,
+                        instructions: recipeData.instructions || "No Instructions Provided",
+                        cost: recipeData.pricePerServing
+                    })
+
+                    if (insertError) throw insertError
+                }
+
+                const { error } = await supabase
+                    .from("savedrecipes")
+                    .insert({
+                        user_id: userId,
+                        recipe_id: numId
+                    })
+                
+                if (error) throw error
+
+
+            } catch (err) {
+                console.error("Error saving recipe", err)
+            }
+
+        }
+
         function renderRecipes(recipes){
             const recipeList = document.getElementById("recipe-list")
             if (!recipes || recipes.length === 0) {
@@ -127,10 +183,12 @@
                 
                 return `
                     <div class="recipe-card">
-                        <img src="${recipe.image}" alt="${recipe.title}"
+                        <img src="${recipe.image}" alt="${recipe.title}">
                         <a href="${recipeUrl}" target="_blank" class="recipe-title">
                             ${recipe.title}
                         </a>
+                        <button class ="save-button" data-id="${recipe.id}" data-title="${recipe.title}"> Save
+                        </button>
                     </div>`
                 })
         }
@@ -181,10 +239,21 @@
         })
 
         document.getElementById("search-button").addEventListener("click", async (e) => {
-            if (selectedIngredients === 0) return
+            if (selectedIngredients.length === 0) return
 
             const results = await searchRecipes(selectedIngredients)
             renderRecipes(results)
+        })
+
+        document.addEventListener("click", async (e) => {
+            if (e.target.classList.contains("save-button")) {
+                const user = await getUser()
+                if (!user) return
+
+                const recipe_id = e.target.dataset.id;
+                
+                saveRecipe(recipe_id, user.id)
+            }
         })
 
 
