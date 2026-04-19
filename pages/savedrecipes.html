@@ -73,7 +73,7 @@
 
         async function fetchSavedRecipes() {
             try{ 
-                const user = getUser()
+                const user = await getUser()
 
                 const { data, error } = await supabase
                 .from("savedrecipes")
@@ -88,13 +88,14 @@
                 )
                 `) 
                 .eq("user_id", user.id)
+                
+                console.log("saved recipes data:", data)
+                return data
 
             } catch (err) {
                 console.error("Error", err)
                 return []
             }
-
-            return data
         }
 
         function renderSavedRecipes(savedRecipes) {
